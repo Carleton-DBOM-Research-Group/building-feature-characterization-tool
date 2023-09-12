@@ -19,6 +19,7 @@ The app aims to serve professionals and researchers in the field of Building Eng
 
 - Benchmark buildings
 - Extract operating hours
+- Extract change point models
 - Characterize energy related features relating to the envelope, casual heat gains, and HVAC operation
 - Determine which energy-related features have retrofit potential
 
