@@ -52,7 +52,7 @@ The application requires the following Python packages:
 2. Navigate to the project directory and install the required Python packages:
 
     ```
-    cd Building-Features-Characterization-App
+    cd building-feature-characterization-tool
     pip install -r requirements.txt
     ```
 
