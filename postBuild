@@ -1,2 +1,0 @@
-#!/bin/bash
-echo "web: streamlit run BFCT.py --server.headless=True --server.enableCORS=False --server.port=\$PORT" > Procfile
