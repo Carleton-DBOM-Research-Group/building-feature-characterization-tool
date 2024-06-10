@@ -39,7 +39,6 @@ The application requires the following Python packages:
 - seaborn==0.12.2
 - streamlit==1.19.0
 - tensorflow==2.11.0
-- tensorflow_intel==2.11.0
 
 ## Installation
 
