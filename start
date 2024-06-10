@@ -1,1 +1,3 @@
+#!/bin/bash
+streamlit run BFCT.py --server.headless=True --server.enableCORS=False --server.port=$PORT
 
