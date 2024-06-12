@@ -25,7 +25,8 @@ The app aims to serve professionals and researchers in the field of Building Eng
 
 
 ## Requirements
-
+- Python 3.9 or later
+  
 The application requires the following Python packages:
 
 - matplotlib==3.7.1
