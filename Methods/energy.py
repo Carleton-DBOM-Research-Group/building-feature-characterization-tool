@@ -122,7 +122,7 @@ def get_all_operating_hours(data):
 def get_operating_hours(daily_data):
     algo = rpt.Pelt(model="l1",jump = 1, min_size = 1).fit(daily_data.values.reshape(-1, 1))
     try:
-        result = algo.predict(pen=500)
+        result = algo.predict(pen=10)
     except Exception:
         return []
     else:
