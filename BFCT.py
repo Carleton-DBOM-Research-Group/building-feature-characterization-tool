@@ -119,7 +119,7 @@ st.markdown("""
 1. Ferreira, Shane; Gunay, H. Burak; Ashouri, Araz; and Shillinglaw, Scott. (2023). "Unsupervised learning of 
 load signatures to estimate energy-related building features using surrogate modelling techniques." 
 Building Simulation, 16:1273 – 1286.
-2. Ferreira, Shane; Gunay, H. Burak; Wills, Adam; and Shillinglaw, Scott. "Neural network-based surrogate model to 
+2. Ferreira, Shane; Gunay, H. Burak; Wills, Adam; and Rizvi, Farzeen. "Neural network-based surrogate model to 
 predict building features from heating and cooling load signatures." [Under Review].
 """)
 
