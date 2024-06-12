@@ -102,7 +102,7 @@ def get_all_operating_hours(data):
     operating_hours_dict = defaultdict(list)
     unique_days = data['day'].unique()
     for day in unique_days:
-        daily_data = data[data['day'] == day]['Heating (W/m²)']
+        daily_data = data[data['day'] == day]['Heating (kW)']
 
         # Check if the daily data is not constant
         if not daily_data.std() == 0:
@@ -122,7 +122,7 @@ def get_all_operating_hours(data):
 def get_operating_hours(daily_data):
     algo = rpt.Pelt(model="l1",jump = 1, min_size = 1).fit(daily_data.values.reshape(-1, 1))
     try:
-        result = algo.predict(pen=50)
+        result = algo.predict(pen=500)
     except Exception:
         return []
     else:

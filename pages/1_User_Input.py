@@ -111,21 +111,23 @@ with col2:
 
 
     if uploaded_file is not None:   
-        energy_use_df = pd.read_csv(uploaded_file)
+        energy_use_df_kW = pd.read_csv(uploaded_file)
     
         # Validate uploaded CSV against required conditions
-        if 'Time' not in energy_use_df.columns:
+        if 'Time' not in energy_use_df_kW.columns:
             st.warning("The uploaded file does not contain a 'Time' column")
-        elif 'Heating (kW)' not in energy_use_df.columns:
+        elif 'Heating (kW)' not in energy_use_df_kW.columns:
             st.warning("The uploaded file does not contain a 'Heating (kW)' column")
-        elif 'Cooling (kW)' not in energy_use_df.columns:
+        elif 'Cooling (kW)' not in energy_use_df_kW.columns:
             st.warning("The uploaded file does not contain a 'Cooling (kW)' column")
-        elif len(energy_use_df) != 8760:
+        elif len(energy_use_df_kW) != 8760:
             st.warning("The uploaded file does not contain 8760 rows of data")
         else:
+            
 
-            energy_use_df.loc[:, ['Cooling (kW)', 'Heating (kW)']] = (energy_use_df.loc[:, ['Cooling (kW)', 'Heating (kW)']] ) *277.77778/ floor_area
-            energy_use_df = energy_use_df.rename(columns={'Cooling (kW)': 'Cooling (W/m²)', 'Heating (kW)': 'Heating (W/m²)'}) 
+            # Normalize the data to W/m²
+            energy_use_df_kW.loc[:, ['Cooling (kW)', 'Heating (kW)']] = (energy_use_df_kW.loc[:, ['Cooling (kW)', 'Heating (kW)']] ) *277.77778/ floor_area
+            energy_use_df = energy_use_df_kW.rename(columns={'Cooling (kW)': 'Cooling (W/m²)', 'Heating (kW)': 'Heating (W/m²)'}) 
     
             st.success("Energy use CSV file succesfully uploaded" )
             
@@ -260,6 +262,7 @@ if st.button("Please save your selections here before moving on to the results")
             # You can adjust the time delay to match the expected duration of the analysis
             time.sleep(0.1)
         st.session_state['floor_area'] = floor_area
+        st.session_state['energy_use_df_kW'] = energy_use_df_kW.to_json()
         st.session_state['energy_use_df'] = energy_use_df.to_json()
         st.session_state['selected_image'] = st.session_state.get("selected_image_caption")
         if 'wwr' not in st.session_state:
@@ -269,6 +272,7 @@ if st.button("Please save your selections here before moving on to the results")
             st.session_state['aspect_ratio'] = caption.split("Aspect ratio - ")[1].split("|")[0]
         aspect_ratio = st.session_state['aspect_ratio']
         ###################################################
+        
         ######################################################################
         # read in weather data & User's uploaded energy use data
         ######################################################################
@@ -288,6 +292,14 @@ if st.button("Please save your selections here before moving on to the results")
         if 'energy_use_df' in st.session_state:
             User_Energy = pd.read_json(st.session_state['energy_use_df'])
             User_Energy1 = User_Energy
+            
+        else:
+            st.error('No energy use data found. Please upload the energy use data.')
+            st.stop()  # stop the script execution
+            
+        if 'energy_use_df_kW' in st.session_state:
+            User_Energy_kW = pd.read_json(st.session_state['energy_use_df_kW'])
+            
         else:
             st.error('No energy use data found. Please upload the energy use data.')
             st.stop()  # stop the script execution
@@ -295,27 +307,41 @@ if st.button("Please save your selections here before moving on to the results")
         # Replace negative values with NaN
         User_Energy.loc[User_Energy['Heating (W/m²)'] < 0, 'Heating (W/m²)'] = np.nan
         User_Energy.loc[User_Energy['Cooling (W/m²)'] < 0, 'Cooling (W/m²)'] = np.nan
+        
+        # Replace negative values with NaN
+        User_Energy_kW.loc[User_Energy_kW['Heating (kW)'] < 0, 'Heating (kW)'] = np.nan
+        User_Energy_kW.loc[User_Energy_kW['Cooling (kW)'] < 0, 'Cooling (kW)'] = np.nan
 
         # Linearly interpolate the NaN values
         User_Energy['Heating (W/m²)'] = User_Energy['Heating (W/m²)'].interpolate(method='linear')
         User_Energy['Cooling (W/m²)'] = User_Energy['Cooling (W/m²)'].interpolate(method='linear')
+        
+        # Linearly interpolate the NaN values
+        User_Energy_kW['Heating (kW)'] = User_Energy_kW['Heating (kW)'].interpolate(method='linear')
+        User_Energy_kW['Cooling (kW)'] = User_Energy_kW['Cooling (kW)'].interpolate(method='linear')
 
         # Add weather data to Energy use dataframe
         Tout.index = User_Energy.index
         User_Energy['Dry Bulb Temperature (\u00b0C)'] = weather['Dry Bulb Temperature {C}']
+        
+        # Add weather data to Energy use dataframe
+        Tout.index = User_Energy_kW.index
+        User_Energy_kW['Dry Bulb Temperature (\u00b0C)'] = weather['Dry Bulb Temperature {C}']
 
         # Convert the 'Time' column to datetime:
         User_Energy['Time'] = pd.to_datetime(User_Energy['Time'], format="%Y-%m-%d %H:%M")
+        User_Energy_kW['Time'] = pd.to_datetime(User_Energy_kW['Time'], format="%Y-%m-%d %H:%M")
 
         # Set the 'Time' column as the index:
         User_Energy.set_index('Time', inplace=True)
-
+        User_Energy_kW.set_index('Time', inplace=True)
+        
         ######################################################################
         # Use rupture algorithm to find operating hours , and seperate into operating and afterhours
         ######################################################################
         # Separate the data into heating periods
         heating_months = [1, 2, 3, 4, 10, 11, 12]
-        heating_data = User_Energy[User_Energy.index.month.isin(heating_months)]
+        heating_data = User_Energy_kW[User_Energy_kW.index.month.isin(heating_months)]
 
         # Add 'day' column
         heating_data['day'] = heating_data.index.date
