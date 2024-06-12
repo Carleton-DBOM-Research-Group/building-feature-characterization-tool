@@ -25,7 +25,7 @@ The app aims to serve professionals and researchers in the field of Building Eng
 
 
 ## Requirements
-- Python 3.9 or later
+- Python 3.9.19
   
 The application requires the following Python packages:
 
