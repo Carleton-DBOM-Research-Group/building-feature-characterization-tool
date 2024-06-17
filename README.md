@@ -52,7 +52,9 @@ The application requires the following Python packages:
 2. Navigate to the project directory and install the required Python packages:
 
     ```
-    cd building-feature-characterization-tool
+    conda create --name BFCT python=3.9.19
+    conda activate BFCT
+    pip install --upgrade pip setuptools
     pip install -r requirements.txt
     ```
 
