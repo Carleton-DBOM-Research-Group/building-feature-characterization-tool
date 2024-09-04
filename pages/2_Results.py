@@ -489,7 +489,7 @@ with st.expander('Learn more about about how your operating hours are determined
                 patterns and potentially identify opportunities for energy-saving strategies''')
 
 # Define a threshold for the minimum frequency 
-frequency_threshold = 0.4  # for example, 10%
+frequency_threshold = 0.1  # for example, 10%
 
 # Calculate the frequency of the mode operating hours for each day of the week
 weekday_frequency = weekday_hours.count(weekday_hours_mode) / len(weekday_hours)
